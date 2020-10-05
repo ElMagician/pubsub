@@ -1,0 +1,158 @@
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: false
+  skip-dirs-use-default: true
+  modules-download-mode: readonly
+
+output:
+  format: colored-line-number
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  funlen:
+    lines: 60
+    statements: 40
+
+  govet:
+    check-shadowing: true
+    settings:
+      printf: # analyzer name, run `go tool vet help` to see all analyzers
+        funcs: # run `go tool vet help printf` to see available settings for `printf` analyzer
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
+    enable:
+      - atomicalign
+    enable-all: false
+    disable-all: false
+  golint:
+    min-confidence: 0.8
+  gocyclo:
+    min-complexity: 20
+  gocognit:
+    min-complexity: 20
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  lll:
+    line-length: 140
+    tab-width: 1
+  unused:
+    check-exported: false
+  unparam:
+    check-exported: false
+  gocritic:
+    disabled-checks:
+      - regexpMust
+    enabled-tags:
+      - performance
+    settings: # settings passed to gocritic
+      captLocal: # must be valid enabled check name
+        paramsOnly: true
+      rangeValCopy:
+        sizeThreshold: 32
+  godox:
+    # report any comments starting with keywords, this is useful for TODO or FIXME comments that
+    # might be left in the code accidentally and should be resolved before merging
+    keywords: # default keywords are TODO, BUG, and FIXME, these can be overwritten by this setting
+      - FIXME
+      - NOTE
+      - OPTIMIZE # marks code that should be optimized before merging
+      - HACK # marks hack-arounds that should be removed before merging
+  whitespace:
+    multi-if: false   # Enforces newlines (or comments) after every multi-line if statement
+    multi-func: false # Enforces newlines (or comments) after every multi-line function signature
+
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - deadcode
+    - dupl
+    - errcheck
+    - exhaustive
+    - ineffassign
+    - megacheck
+    - maligned
+    - misspell
+    - gomnd
+    - gocritic
+    - gocyclo
+    - govet
+    - golint
+    - goconst
+    - gosimple
+    - gosec
+    - goimports
+    - goerr113
+    - lll
+    - noctx
+    - sqlclosecheck
+    - structcheck
+    - typecheck
+    - whitespace
+    - unparam
+    - unused
+
+  presets:
+    - bugs
+    - unused
+  fast: true
+
+
+issues:
+  exclude:
+    # Do not require comment on exported methods
+    - "should have comment or be unexported"
+    - "should have comment (or a comment on this block) or be unexported"
+
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    # Exclude known linters from partially hard-vendored code,
+    # which is impossible to exclude via "nolint" comments.
+    - path: internal/hmac/
+      text: "weak cryptographic primitive"
+      linters:
+        - gosec
+
+    # Exclude some staticcheck messages
+    - linters:
+        - staticcheck
+      text: "SA9003:"
+
+    # Exclude lll issues for long lines with go:generate
+    - linters:
+        - lll
+        - golint
+      source: "^//go:generate "
+
+  # Independently from option `exclude` we use default exclude patterns,
+  # it can be disabled by this option. To list all
+  # excluded by default patterns execute `golangci-lint run --help`.
+  # Default value for this option is true.
+  exclude-use-default: true
+
+  # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
+  max-issues-per-linter: 0
+
+  # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
+  max-same-issues: 0
+
+  # Show only new issues: if there are unstaged changes or untracked files,
+  # only those changes are analyzed, else only changes in HEAD~ are analyzed.
+  # It's a super-useful option for integration of golangci-lint into existing
+  # large codebase. It's not practical to fix all existing issues at the moment
+  # of integration: much better don't allow issues in new code.
+  # Default is false.
+  new: false
+
+service:
+  golangci-lint-version: 1.30.x # use the fixed version to not introduce new linters unexpectedly
