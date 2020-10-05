@@ -109,10 +109,6 @@ linters:
 
 
 issues:
-  exclude:
-    # Do not require comment on exported methods
-    - "should have comment or be unexported"
-    - "should have comment (or a comment on this block) or be unexported"
 
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
