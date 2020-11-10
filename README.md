@@ -1,7 +1,17 @@
 # pubsub [![PkgGoDev][godoc_img]]() [![Coverage Status][coverage_img]][coverage] [![Build Status][status_img]][status] [![Go Report Card][report_img]][report]
-This package aims to simplify google pubsub usage within go application. It mostly
-provides helpers and structure to easily send and listen to message while
-cleanly managing topics and subscriptions.
+
+This package aims to simplify pubsub management pubsub implementation in go programs. It allows to regroup any pubsub
+client through a single interface lessening the burdening of provider switching.
+
+## Usage
+
+- `go get github.com/elmagician/pubsub`
+
+## Implementations
+
+- Mock: testify mock implementation for unit testing
+- GCP: google pubsub implementation
+
 
 [//]: <> (Badges links and images)
 [coverage]: https://pkg.go.dev/github.com/elmagician/pubsub?tab=overview

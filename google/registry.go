@@ -7,21 +7,21 @@ import (
 	googlePubSub "cloud.google.com/go/pubsub"
 
 	"github.com/elmagician/pubsub"
-	"github.com/elmagician/pubsub/internal"
+	"github.com/elmagician/pubsub/google/internal"
 )
 
 const timeout = 10 * time.Second
 
-var _ pubsub.Registry = (*LocalRegistry)(nil)
+var _ pubsub.Registry = (*Registry)(nil)
 
-type LocalRegistry struct {
+type Registry struct {
 	client        *googlePubSub.Client
 	topics        map[string]*internal.Topic
 	subscriptions map[string]*internal.Subscription
 }
 
 // nolint: dupl
-func (l *LocalRegistry) AddTopic(key string, publishSettings *googlePubSub.PublishSettings) error {
+func (l *Registry) AddTopic(key string, publishSettings *googlePubSub.PublishSettings) error {
 	if _, ok := l.topics[key]; ok {
 		return nil
 	}
@@ -45,7 +45,7 @@ func (l *LocalRegistry) AddTopic(key string, publishSettings *googlePubSub.Publi
 }
 
 // nolint: dupl
-func (l *LocalRegistry) AddSubscription(key string, receiveSettings *googlePubSub.ReceiveSettings) error {
+func (l *Registry) AddSubscription(key string, receiveSettings *googlePubSub.ReceiveSettings) error {
 	if _, ok := l.subscriptions[key]; ok {
 		return nil
 	}
@@ -68,13 +68,41 @@ func (l *LocalRegistry) AddSubscription(key string, receiveSettings *googlePubSu
 	return nil
 }
 
-func (l *LocalRegistry) StopTopics(topics ...string) {
+// nolint: dupl
+func (l *Registry) MustAddTopic(key string, publishSettings *googlePubSub.PublishSettings) pubsub.Registry {
+	if _, ok := l.topics[key]; ok {
+		return nil
+	}
+
+	l.topics[key] = &internal.Topic{
+		Topic:           l.client.Topic(key),
+		PublishSettings: publishSettings,
+	}
+
+	return l
+}
+
+// nolint: dupl
+func (l *Registry) MustAddSubscription(key string, receiveSettings *googlePubSub.ReceiveSettings) pubsub.Registry {
+	if _, ok := l.subscriptions[key]; ok {
+		return nil
+	}
+
+	l.subscriptions[key] = &internal.Subscription{
+		Subscription:    l.client.Subscription(key),
+		ReceiveSettings: receiveSettings,
+	}
+
+	return l
+}
+
+func (l *Registry) StopTopics(topics ...string) {
 	for _, key := range topics {
 		l.StopTopic(key)
 	}
 }
 
-func (l *LocalRegistry) Clear() {
+func (l *Registry) Clear() {
 	for key := range l.topics {
 		l.StopTopic(key)
 	}
@@ -82,7 +110,7 @@ func (l *LocalRegistry) Clear() {
 	l.subscriptions = make(map[string]*internal.Subscription)
 }
 
-func (l *LocalRegistry) StopTopic(key string) {
+func (l *Registry) StopTopic(key string) {
 	if topic, ok := l.topics[key]; ok {
 		topic.Stop()
 	}
