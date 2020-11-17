@@ -13,6 +13,7 @@ func ShouldBeLikeError(actual interface{}, expected ...interface{}) string {
 	if len(expected) != 1 {
 		return "ShouldBeLikeError assertion expect 1 and only 1 asserter"
 	}
+
 	resp := ""
 	expActComp := fmt.Sprintf("\nActual: %#v\nExpected: %#v", actual, expected[0])
 
@@ -25,6 +26,7 @@ func ShouldBeLikeError(actual interface{}, expected ...interface{}) string {
 	if !ok2 {
 		resp += "Expected value should be an error"
 	}
+
 	if resp != "" {
 		return resp + expActComp
 	}
@@ -32,6 +34,7 @@ func ShouldBeLikeError(actual interface{}, expected ...interface{}) string {
 	if !errors.Is(actualErr, expectedErr) {
 		return "Actual error do not match expected err Is." + expActComp
 	}
+
 	return ""
 }
 

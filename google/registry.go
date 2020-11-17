@@ -25,6 +25,7 @@ func (l *Registry) AddTopic(key string, publishSettings *googlePubSub.PublishSet
 	if _, ok := l.topics[key]; ok {
 		return nil
 	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -33,6 +34,7 @@ func (l *Registry) AddTopic(key string, publishSettings *googlePubSub.PublishSet
 		if err != nil {
 			return err
 		}
+
 		return pubsub.ErrNotFound
 	}
 
@@ -49,6 +51,7 @@ func (l *Registry) AddSubscription(key string, receiveSettings *googlePubSub.Rec
 	if _, ok := l.subscriptions[key]; ok {
 		return nil
 	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -57,6 +60,7 @@ func (l *Registry) AddSubscription(key string, receiveSettings *googlePubSub.Rec
 		if err != nil {
 			return err
 		}
+
 		return pubsub.ErrNotFound
 	}
 
@@ -106,6 +110,7 @@ func (l *Registry) Clear() {
 	for key := range l.topics {
 		l.StopTopic(key)
 	}
+
 	l.topics = make(map[string]*internal.Topic)
 	l.subscriptions = make(map[string]*internal.Subscription)
 }

@@ -59,6 +59,7 @@ func (p *Publisher) To(topics ...string) pubsub.Publisher {
 
 		p.nbTopics++
 	}
+
 	return p
 }
 
@@ -78,6 +79,7 @@ func (p *Publisher) Send(ctx context.Context, msg pubsub.Envelop) (pubsub.SendRe
 	if p.destroyed {
 		return nil, ErrPublisherDestroyed
 	}
+
 	res := SendResults{results: make(map[string]*googlePubSub.PublishResult)}
 
 	pubsubMessage, err := msg.ToPubsubMessage() // transform envelop to pubsub.Message
@@ -96,9 +98,11 @@ func (p *Publisher) Send(ctx context.Context, msg pubsub.Envelop) (pubsub.SendRe
 	}
 
 	p.reset()
+
 	return res, nil
 }
 
+// TODO clean destroy implementation
 func (p *Publisher) Destroy() {
 	p.destroyed = true
 }

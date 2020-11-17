@@ -39,11 +39,13 @@ type (
 		OnUnmatched(callback MessageCallback)
 
 		// OnError applies a callback method to all received errors.
-		OnError(callback func(ctx context.Context))
+		// Message will be nil if errors occurs without receiving message from pubsub
+		// client.
+		OnError(callback func(err error, msg Message))
 
 		// Start receiving as separated process.
 		// Errors are managed through Error callback.
-		Start(ctx context.Context)
+		Start(ctx context.Context, reloadOnFailure bool)
 
 		// Receive messages in current process.
 		// Process will stop at the first error received and return it.

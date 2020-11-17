@@ -33,6 +33,7 @@ func (s SendResults) OnResults(ctx context.Context, callback func(topic string, 
 
 		go func() {
 			id, err := result.Get(ctx)
+
 			callback(topic, pubsub.Result{ID: id, Error: err})
 		}()
 	}

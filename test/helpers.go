@@ -12,6 +12,7 @@ func AssertMockFullFilled(t *testing.T, mocks ...*mock.Mock) bool {
 	for _, m := range mocks {
 		res = m.AssertExpectations(t) && res
 	}
+
 	return res
 }
 

@@ -69,6 +69,8 @@ func (p Pubsub) Listen(subscription string) pubsub.Listener {
 	panic("implement me")
 }
 
+// Receive set up an instance to receive message from a GCP subscription.
+// It use client, config and registry from main Pubsub instance.
 func (p Pubsub) Receive(subscription string) pubsub.Receiver {
 	panic("implement me")
 }
